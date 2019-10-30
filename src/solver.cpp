@@ -24,12 +24,12 @@ int main(int argc, char** argv){
     
     double u[6];
 
-    u[0]=10.0;
-    u[1]=-10.0;
-    u[2]=-10.0;
-    u[3]=-10.0;
-    u[4]=10.0;
-    u[5]=10.0;
+    u[0]=0.00;
+    u[1]=0.00;
+    u[2]=0.001;
+    u[3]=0.00;
+    u[4]=0.001;
+    u[5]=0.001;
 
     std::cout << "Initial" << std::endl;
 
@@ -92,17 +92,22 @@ int main(int argc, char** argv){
             }
 
             ceres::CostFunction *costij = new ceres::AutoDiffCostFunction<ClassficationError, 1, 6>(
-            new ClassficationError(Pij[i][j] + 15.0, i, j));
+            new ClassficationError(10.0, Pij[i][j] + 15.0, i, j));
 
             problem.AddResidualBlock(costij, NULL, u);
         }
         
 
         ceres::CostFunction *magi = new ceres::AutoDiffCostFunction<MagError, 1, 6>(
-        new MagError(0.01, i));
+        new MagError(10.0, i));
 
         problem.AddResidualBlock(magi, NULL, u);
     }
+
+    ceres::CostFunction *atleastZero = new ceres::AutoDiffCostFunction<AtleastZeroError, 1, 6>(
+            new AtleastZeroError(0.001, 6));
+
+    problem.AddResidualBlock(atleastZero, NULL, u);
 
     ceres::CostFunction *atleastOne = new ceres::AutoDiffCostFunction<AtleastOneError, 1, 6>(
             new AtleastOneError(0.001, 6));
