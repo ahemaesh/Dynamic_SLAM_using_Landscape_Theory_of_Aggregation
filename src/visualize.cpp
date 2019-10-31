@@ -22,8 +22,8 @@ void plotPoints(std::vector<Point> pts, std::vector<bool> status)
                                                                                     {
                                                                                         return s1.y < s2.y;
                                                                                     });
-    int image_width = (int)maxWidth->x - (int)minWidth->x + 20;
-    int image_height = (int)maxHeight->y - (int)minHeight->y + 20;
+    int image_width = 2 * std::max(abs(maxWidth->x), abs(minWidth->x)) + 20;
+    int image_height = 2 * std::max(abs(maxHeight->y), abs(minHeight->y)) + 20;
 
     float center_x = image_width / 2.0, center_y = image_height / 2.0;
 
@@ -32,28 +32,33 @@ void plotPoints(std::vector<Point> pts, std::vector<bool> status)
     std::cout << image_width << " " << image_height << std::endl;
     int point_radius = 1, thickness = 2;
 
-    cv::Scalar red(0, 0, 255), green(0, 255, 0);
+    cv::Scalar red(0, 0, 255), green(0, 255, 0), blue(255, 0, 0);
     cv::Mat plot(image_width, image_height, CV_8UC3, cv::Scalar::all(0));
+
+    //plot the origin
+    cv::circle(plot, cv::Point(center_y, center_x), point_radius, blue, thickness);
 
     for(size_t i=0; i<pts.size(); i++)
     {
+        std::cout << "Point: " << pts[i].x + center_x <<  " " << pts[i].y + center_y << std::endl;
         if(status[i])
         {
-            cv::circle(plot, cv::Point(pts[i].x + center_x, pts[i].y + center_y), point_radius, green, thickness);
+            cv::circle(plot, cv::Point(pts[i].y + center_y, pts[i].x + center_x), point_radius, green, thickness);
         }
         else
         {
-            cv::circle(plot, cv::Point(pts[i].x + center_x, pts[i].y + center_y), point_radius, red, thickness);
+            cv::circle(plot, cv::Point(pts[i].y + center_y, pts[i].x + center_x), point_radius, red, thickness);
         }
     }
+    cv::rotate(plot, plot, cv::ROTATE_90_COUNTERCLOCKWISE);
     cv::imshow("Laser scan plot", plot);
     cv::waitKey(0);
 }
 
 int main()
 {
-    std::vector<Point> pts(18);
-    std::vector<bool> status(18);
+    std::vector<Point> pts(5);
+    std::vector<bool> status(5);
 
     for(size_t i=0; i<pts.size(); i++)
     {
