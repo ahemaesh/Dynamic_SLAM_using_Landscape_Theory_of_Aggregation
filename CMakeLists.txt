@@ -1,27 +1,15 @@
 cmake_minimum_required(VERSION 2.8)
 project(D_SLAM)
+set(CMAKE_CXX_STANDARD 11)
 
-# # Google Logging
-# message("-- Check for Google Log")
-# find_package(Glog REQUIRED)
-# if(GLOG_FOUND)
-# 	message("-- Found Google Logging: ${GLOG_INCLUDE_DIRS}")
-# else(GLOG_FOUND)
-# 	message(FATAL_ERROR "Can't find Google Logging. Please set GLOG_INCLUDE_DIR & GLOG_LIBRARY")
-# endif(GLOG_FOUND)
-
-# Ceres Solver
-# set(Ceres_DIR "/home/parv/ceres/ceres-bin")
-message("-- Check for Ceres solver")
 find_package(Ceres REQUIRED)
-if(CERES_FOUND)
-	message("-- Found Ceres Solver: ${CERES_INCLUDE_DIRS}")
-else(CERES_FOUND)
-	message(FATAL_ERROR "Can't find Ceres Solver. Please set CERES_INCLUDE_DIR & CERES_LIBRARY")
-endif(CERES_FOUND)
+find_package(OpenCV REQUIRED)
 
-include_directories(${CMAKE_INCLUDE_PATH} ${CERES_INCLUDE_DIRS})
+include_directories(${CMAKE_INCLUDE_PATH} ${CERES_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
 
 # Add the executable
 add_executable(solver src/solver.cpp src/processData.cpp src/Classifier.cpp)
 target_link_libraries(solver ${CERES_LIBRARIES})
+
+add_executable(visualizer src/visualize.cpp)
+target_link_libraries(visualizer ${CERES_LIBRARIES} ${OpenCV_LIBRARIES})
