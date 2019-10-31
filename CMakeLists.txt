@@ -23,5 +23,5 @@ endif(CERES_FOUND)
 include_directories(${CMAKE_INCLUDE_PATH} ${CERES_INCLUDE_DIRS})
 
 # Add the executable
-add_executable(solver src/solver.cpp src/processData.cpp)
+add_executable(solver src/solver.cpp src/processData.cpp src/Classifier.cpp)
 target_link_libraries(solver ${CERES_LIBRARIES})

@@ -155,42 +155,21 @@ struct ClassficationError{
 struct MagError{
 
 	// Constructor
-	MagError(double scale, int indexi) : scale(scale), indexi(indexi) {}
+	MagError(double scale, int indexi, double c1, double c2) : scale(scale), indexi(indexi), class1val(c1), class2val(c2) {}
 
 	// The operator method. Evaluates the cost function and computes the jacobians.
 	template <typename T>
 	bool operator() (const T* const u,  T* residuals) const {
-		residuals[0] = T(scale)*(u[indexi])*T(T(0.001)-u[indexi]);
+		residuals[0] = T(scale)*T(T(class1val) - u[indexi])*T(T(class2val)-u[indexi]);
 		return true;
 	}
 
 	double scale;
 	int indexi;
+	double class1val;
+	double class2val;
 };
 
-
-struct AtleastZeroError{
-
-    // Constructor
-    AtleastZeroError(double scale, int tsize) : scale(scale), tsize(tsize) {}
-
-    // The operator method. Evaluates the cost function and computes the jacobians.
-    template <typename T>
-    bool operator() (const T* const u,  T* residuals) const {
-        T sum = T(0.0000000);
-        for (int i = 0; i < tsize; ++i)
-        {
-            sum += u[i];
-        }
-
-        residuals[0] = T(T(scale) * T(1.0)/sum);
-
-        return true;
-    }
-
-    double scale;
-    int tsize;
-};
 
 struct AtleastOneError{
 
@@ -201,9 +180,9 @@ struct AtleastOneError{
     template <typename T>
     bool operator() (const T* const u,  T* residuals) const {
         T sum = T(0.0000000);
-        for (int i = 0; i < tsize; ++i)
+        for (int i = 0; i < tsize-1; ++i)
         {
-            sum += T(T(0.001) - u[i]);
+            sum += T(abs(u[i+1] - u[i]));
         }
 
         residuals[0] = T(T(scale) * T(1.0)/sum);
