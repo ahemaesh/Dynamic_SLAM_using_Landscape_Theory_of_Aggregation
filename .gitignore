@@ -1,6 +1,10 @@
+#Folders
 **build**
-**.idea**
 **cmake**
-**.ini**
 **__MAC**
+
+#Files
+**.idea**
+**.ini**
 **.pyc**
+a

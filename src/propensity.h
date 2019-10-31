@@ -5,7 +5,8 @@ namespace DynamicSLAM{
 		class Propensity{
 			private:
 				//place holder
-				static const int i = 144;
+				static const int i = 144; 
+				
 			
 			public:
 				Propensity(){
