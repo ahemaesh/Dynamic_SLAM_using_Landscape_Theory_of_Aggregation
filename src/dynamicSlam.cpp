@@ -1,34 +1,77 @@
 #include <cmath>
+#include <Eigen/Dense>
 #include <iostream>
 #include <vector>
 
-#include "dynamicSlam.h"
+#include "dynamicSlam.hpp"
 
 namespace  DynamicSLAM{
-	void Propensity::calculatePropensity(std::vector<double> &distances, std::vector<std::vector<double> > &propensityScore, std::vector<double> &playerWeight){
+	void calculatePropensity(std::vector<std::vector<double> > &propensityScore, std::vector<double> &playerWeight){
 		// vector initialization of fixed size
-		int vecSize = distances.size();  
-		playerSize.resize(vecSize);
+		int timeStep = distances.size();
+		int vecSize = distances[0].size();  
+		playerWeight.resize(vecSize);
 		resizeVec(propensityScore,vecSize,vecSize);
 		
-
 		for(int i=0;i<propensityScore.size();i++){
 			for(int j=0;j<propensityScore[0].size();j++){
-				// propensityScore[i][j] = std::norm(distances[i]-distances[j]);
-				std::cout << "\t" << propensityScore[i][j];
+				propensityScore[i][j] = (1/timeStep)*(abs(featureSum[i] - featureSum[j]));
 			}
-			std::cout << std::endl;
+			playerWeight[i] = 1/standardDeviations[i];
 		}
 	}
 
-	void Distances::calculateDistances(std::vector<std::vector<std::point> > &landmarks, std::vector<std::vector<double> > &distances){
+	void Propensity::calculateDistances(std::vector<std::vector<Point> > &scans){
+
+		Eigen::VectorXd point;
+		sigma_inv = Eigen::MatrixXd::Identity(2,2);
+		resizeVec(distances,scans.size()-1,scans[0].size());
+		resizeVec(distanceTranspose,scans[0].size(),scans.size()-1)
+		standardDeviations.resize(scans[0].size())
+		featureSum.resize(scans[0].size())
+
+		double stdDev = 0;
+		double sum = 0;
+
+
+		for(int scan=1; scan<scans.size(); scan++){
+			for(int feature=0; feature<scans[0].size();feature++){
+				point = abs(scans[0][feature]-scans[scan][feature]);
+				distances[scan-1][feature] = sqrt(point.transpose()*sigma_inv*point);
+				distanceTranspose[feature].push_back(distances[scan-1][feature]);
+			}
+		}
+
+		for(int i=0;i<distanceTranspose.size();i++){
+			Propensity::calculateStandardDeviation(distanceTranspose[i], stdDev, sum);
+			standardDeviations[i] = stdDev;
+			featureSum[i] = sum;
+		}
 
 	}
 
+	void Propensity::calculateStandardDeviation(std::vector<double> data, double &stdDev, double &sum){
+		int data_length = data.size();
+		double variance = 0;
+	    double mean = 0;
 
+	    stdDev = 0;
+	    sum = 0;
 
+	    for(int i=0; i<data_length;i++){
+	    	sum += data[i];
+	    }
+	    mean = sum/data_length;
+
+	    for(int i=0; i<data_length;i++){
+	    	variance += pow((data[i]-mean),2);
+	    }
+	    variance /= data_length;
+	    stdDev = sqrt(variance);
+
+	    return ;
+	}
 }
-
 
 int main(){
 	//Avinash :  Main function is for testing
