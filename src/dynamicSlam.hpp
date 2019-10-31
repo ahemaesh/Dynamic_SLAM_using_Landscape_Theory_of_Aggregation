@@ -6,6 +6,11 @@ namespace DynamicSLAM{
 
 	class Propensity{
 		private:
+			std::vector<std::vector<double> > distanceTranspose;
+			std::vector<std::vector<double> > distances;
+			std::vector<double> standardDeviations;	
+			std::vector<double> featureSum;	
+
 			void resizeVec(std::vector<std::vector<double> > &vec, const unsigned short ROWS, const unsigned short COLUMNS){
 			    vec.resize(ROWS);
 			    for( auto &it : vec ){
@@ -23,14 +28,8 @@ namespace DynamicSLAM{
 
 			void calculatePropensity(std::vector<std::vector<double> > &propensityScore, std::vector<double> &playerWeight);
 
-			void calculateDistances(std::vector<std::vector<double> > &scans, std::vector<std::vector<double> > &distances);
-
-		private:
-			std::vector<std::vector<double> > distanceTranspose;
-			std::vector<std::vector<double> > distances;
-			std::vector<std::vector<double> > standardDeviations;	
-			std::vector<double> featureSum;	
-	}
+			void calculateDistances(std::vector<std::vector<Point> > &scans);
+	};
 }
 
 

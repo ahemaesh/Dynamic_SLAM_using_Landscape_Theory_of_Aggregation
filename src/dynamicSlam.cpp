@@ -1,12 +1,12 @@
 #include <cmath>
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 #include <iostream>
 #include <vector>
 
 #include "dynamicSlam.hpp"
 
 namespace  DynamicSLAM{
-	void calculatePropensity(std::vector<std::vector<double> > &propensityScore, std::vector<double> &playerWeight){
+	void Propensity::calculatePropensity(std::vector<std::vector<double> > &propensityScore, std::vector<double> &playerWeight){
 		// vector initialization of fixed size
 		int timeStep = distances.size();
 		int vecSize = distances[0].size();  
@@ -23,12 +23,11 @@ namespace  DynamicSLAM{
 
 	void Propensity::calculateDistances(std::vector<std::vector<Point> > &scans){
 
-		Eigen::VectorXd point;
-		sigma_inv = Eigen::MatrixXd::Identity(2,2);
+		Eigen::MatrixXd sigma_inv = Eigen::MatrixXd::Identity(2,2);
 		resizeVec(distances,scans.size()-1,scans[0].size());
-		resizeVec(distanceTranspose,scans[0].size(),scans.size()-1)
-		standardDeviations.resize(scans[0].size())
-		featureSum.resize(scans[0].size())
+		resizeVec(distanceTranspose,scans[0].size(),scans.size()-1);
+		standardDeviations.resize(scans[0].size());
+		featureSum.resize(scans[0].size());
 
 		double stdDev = 0;
 		double sum = 0;
@@ -36,7 +35,9 @@ namespace  DynamicSLAM{
 
 		for(int scan=1; scan<scans.size(); scan++){
 			for(int feature=0; feature<scans[0].size();feature++){
-				point = abs(scans[0][feature]-scans[scan][feature]);
+				Eigen::Vector2d  point1(scans[0][feature].x,scans[0][feature].y);
+				Eigen::Vector2d  point2(scans[scan][feature].x,scans[scan][feature].y);
+				auto point = point1-point2;
 				distances[scan-1][feature] = sqrt(point.transpose()*sigma_inv*point);
 				distanceTranspose[feature].push_back(distances[scan-1][feature]);
 			}
@@ -75,9 +76,10 @@ namespace  DynamicSLAM{
 
 int main(){
 	//Avinash :  Main function is for testing
-	DynamicSLAM::Propensity object_propensity = DynamicSLAM::Propensity();
-	std::vector<double> nums1(5);
-	std::vector<std::vector<double> > nums2;
-	std::vector<double> nums3;
-	object_propensity.calculatePropensity(nums1,nums2,nums3);
+	// DynamicSLAM::Propensity object_propensity = DynamicSLAM::Propensity();
+	// std::vector<double> nums1(5);
+	// std::vector<std::vector<double> > nums2;
+	// std::vector<double> nums3;
+	// object_propensity.calculatePropensity(nums1,nums2,nums3);
+	return 0;
 }
