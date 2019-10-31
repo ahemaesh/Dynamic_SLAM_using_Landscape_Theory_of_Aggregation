@@ -73,13 +73,3 @@ namespace  DynamicSLAM{
 	    return ;
 	}
 }
-
-int main(){
-	//Avinash :  Main function is for testing
-	// DynamicSLAM::Propensity object_propensity = DynamicSLAM::Propensity();
-	// std::vector<double> nums1(5);
-	// std::vector<std::vector<double> > nums2;
-	// std::vector<double> nums3;
-	// object_propensity.calculatePropensity(nums1,nums2,nums3);
-	return 0;
-}
