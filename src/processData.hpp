@@ -28,6 +28,7 @@ class ProcessData
 {
 public:
     ProcessData(const std::string& filename);
+    std::vector<std::vector<Point>> getCorrespondedScans(int timeStamp, int windowSize);
 
 private:
     void readLog();
@@ -37,6 +38,7 @@ private:
     std::vector<std::vector<Point>> scans;
     std::vector<Odom> odometryVehicle;
     std::vector<Odom> odometrySensor;
+    double matchRadius;
 };
 
 

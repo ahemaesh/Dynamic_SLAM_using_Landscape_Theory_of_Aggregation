@@ -4,10 +4,12 @@
 
 #include "processData.hpp"
 #include <math.h>
-
+#include <assert.h>
+#include <cmath>
 
 ProcessData::ProcessData(const std::string& filename)
 {
+    this->matchRadius = 10.0;
     logFile.open(filename);
     readLog();
 }
@@ -57,4 +59,58 @@ void ProcessData::readLog()
             this->odometrySensor.emplace_back(sensorOdom);
         }
     }
+}
+
+std::vector<std::vector<Point>> ProcessData::getCorrespondedScans(int timeStamp, int windowSize)
+{
+    std::vector<std::vector<Point>> correspondedScans(windowSize, std::vector<Point>());
+
+    assert(timeStamp + windowSize <= int(this->scans.size()));
+
+    for (int i = 0; i < int(this->scans[timeStamp].size()); ++i)
+    {
+        std::vector<Point> correspondedPoints;
+        bool matchFoundForEachTimeStamp = true;
+        auto pointA = this->scans[timeStamp][i];
+
+        correspondedPoints.emplace_back(pointA);
+
+        for (int a = timeStamp + 1; a < timeStamp + windowSize; a++)
+        {
+            Point matchingPoint{0.0, 0.0};
+            double minDist = -1.0;
+
+            for (int j = 0; j < int(this->scans[a].size()); ++j)
+            {
+                auto pointB = this->scans[a][j];
+                auto currDist = sqrt(pow(pointA.x - pointB.x, 2) + pow(pointA.y - pointB.y, 2));
+
+                if ((minDist == -1.0 || currDist < minDist) && currDist < this->matchRadius)
+                {
+                    minDist = currDist;
+                    matchingPoint = pointB;
+                }
+
+            }
+            if (minDist != -1.0)
+            {
+                correspondedPoints.emplace_back(matchingPoint);
+            }
+            else
+            {
+                matchFoundForEachTimeStamp = false;
+                break;
+            }
+        }
+
+        if (matchFoundForEachTimeStamp)
+        {
+            for(int a = 0; a < windowSize; a++)
+            {
+                correspondedScans[a].emplace_back(correspondedPoints[a]);
+            }
+        }
+    }
+
+    return correspondedScans;
 }

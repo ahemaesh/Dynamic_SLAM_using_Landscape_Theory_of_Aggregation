@@ -22,6 +22,9 @@ int main(int argc, char** argv){
     std::string filename("../data/robotdata1.log");
     ProcessData processData(filename);
 
+    auto correspondedScans = processData.getCorrespondedScans(100, 5);
+    std::cout << "Correspondences out of 180 : " << correspondedScans[0].size() << std::endl;
+
     std::vector<bool> init;
     std::vector<double> S(6, 1.0);
     std::vector<std::vector<double>> P(6, std::vector<double>(6, 0.0));

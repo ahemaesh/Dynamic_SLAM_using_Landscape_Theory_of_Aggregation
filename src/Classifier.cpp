@@ -13,10 +13,9 @@ Classifier::Classifier()
     this->scaleDiscrete = 10.0;
     this->scaleAtleastOne = 0.001;
 
-    this->boundary = (this->class1 + this->class2)/2.0;
 }
 
-std::vector<bool> Classifier::classify(std::vector<std::vector<double>> P, std::vector<double> S, std::vector<bool> init)
+std::vector<bool> Classifier::classify(const std::vector<std::vector<double>>& P, const std::vector<double>& S, const std::vector<bool>& init)
 {
     ceres::Problem problem;
 
@@ -39,16 +38,9 @@ std::vector<bool> Classifier::classify(std::vector<std::vector<double>> P, std::
 
     std::vector<bool> ans;
 
-    for (int i = 0; i < S.size(); i++)
+    for (int i = 0; i < int(S.size()); i++)
     {
-        if (abs(u[i] - this->class1) <= abs(u[i] - this->class2))
-        {
-            ans.emplace_back(false);
-        }
-        else
-        {
-            ans.emplace_back(true);
-        }
+        ans.emplace_back(abs(u[i] - this->class1) > abs(u[i] - this->class2));
         std::cout << "u " << i << " :" << u[i] << std::endl;
     }
 
@@ -95,19 +87,19 @@ Classifier::addCosts(const std::vector<std::vector<double>> &P, const std::vecto
             ceres::CostFunction *costij = new ceres::AutoDiffCostFunction<ClassficationError, 1, 180>(
                     new ClassficationError(this->scaleP * S[j] / S[i], P[i][j] - minij, i, j));
 
-            problem.AddResidualBlock(costij, NULL, u);
+            problem.AddResidualBlock(costij, nullptr, u);
         }
 
 
         ceres::CostFunction *magi = new ceres::AutoDiffCostFunction<MagError, 1, 180>(
                 new MagError(this->scaleDiscrete, i, this->class1, this->class2));
 
-        problem.AddResidualBlock(magi, NULL, u);
+        problem.AddResidualBlock(magi, nullptr, u);
     }
 
     ceres::CostFunction *atleastOne = new ceres::AutoDiffCostFunction<AtleastOneError, 1, 180>(
             new AtleastOneError(this->scaleAtleastOne, dim));
 
-    problem.AddResidualBlock(atleastOne, NULL, u);
+    problem.AddResidualBlock(atleastOne, nullptr, u);
 }
 
