@@ -14,9 +14,12 @@
 
 // Contains various cost function struct specifications
 #include "costFunctions.hpp"
-
+#include "processData.hpp"
 
 int main(int argc, char** argv){
+
+    std::string filename("../data/robotdata1.log");
+    ProcessData processData(filename);
 
     google::InitGoogleLogging(argv[0]);
 
