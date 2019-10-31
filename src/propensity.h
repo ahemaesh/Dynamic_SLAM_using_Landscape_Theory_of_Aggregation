@@ -4,8 +4,12 @@ namespace DynamicSLAM{
 	namespace Propensity{
 		class Propensity{
 			private:
-				//place holder
-				static const int i = 144; 
+				void resizeVec(std::vector<std::vector<float> > &vec, const unsigned short ROWS, const unsigned short COLUMNS){
+				    vec.resize(ROWS);
+				    for( auto &it : vec ){
+				        it.resize(COLUMNS);
+				    }
+				}
 				
 			
 			public:
@@ -18,7 +22,7 @@ namespace DynamicSLAM{
 				}
 
 
-				void calculatePropensity(std::vector<float> &pointValues);
+				void calculatePropensity(std::vector<float> &distances, std::vector<std::vector<float> > &propensityScore, std::vector<float> &playerSize);
 
 		};
 	}
