@@ -27,9 +27,6 @@ void plotPoints(std::vector<Point> pts, std::vector<bool> status)
 
     float center_x = image_width / 2.0, center_y = image_height / 2.0;
 
-    std::cout << "Image Stats: \n";
-    std::cout << (int)minWidth->x << " " << (int)maxWidth->x << " ----- " << (int)minHeight->y << " " << (int)maxHeight->y << " ----- " << center_x << " " << center_y << std::endl;
-    std::cout << image_width << " " << image_height << std::endl;
     int point_radius = 1, thickness = 2;
 
     cv::Scalar red(0, 0, 255), green(0, 255, 0), blue(255, 0, 0);
@@ -40,7 +37,6 @@ void plotPoints(std::vector<Point> pts, std::vector<bool> status)
 
     for(size_t i=0; i<pts.size(); i++)
     {
-        std::cout << "Point: " << pts[i].x + center_x <<  " " << pts[i].y + center_y << std::endl;
         if(status[i])
         {
             cv::circle(plot, cv::Point(pts[i].y + center_y, pts[i].x + center_x), point_radius, green, thickness);
@@ -54,6 +50,7 @@ void plotPoints(std::vector<Point> pts, std::vector<bool> status)
     cv::imshow("Laser scan plot", plot);
     cv::waitKey(0);
 }
+/*
 
 int main()
 {
@@ -71,3 +68,4 @@ int main()
     plotPoints(pts, status);
     return 0;
 }
+*/

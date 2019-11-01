@@ -16,6 +16,7 @@
 #include "processData.hpp"
 #include "Classifier.hpp"
 #include "dynamicSlam.hpp"
+#include "visualize.hpp"
 
 int main(int argc, char** argv){
     google::InitGoogleLogging(argv[0]);
@@ -25,8 +26,11 @@ int main(int argc, char** argv){
 
     DynamicSLAM::Propensity propensity;
 
-    auto correspondedScans = processData.getCorrespondedScans(100, 5);
+    auto correspondedScans = processData.getCorrespondedScans(0, 20);
     propensity.calculateDistances(correspondedScans);
+
+    std::vector<bool> status(correspondedScans[0].size(), false);
+    plotPoints(correspondedScans[0], status);
 
     std::vector<std::vector<double>> Pij;
     std::vector<double> Weight;

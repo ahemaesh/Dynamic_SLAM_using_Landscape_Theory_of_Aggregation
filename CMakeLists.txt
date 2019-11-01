@@ -9,8 +9,5 @@ include_directories(${CMAKE_INCLUDE_PATH} ${CERES_INCLUDE_DIRS} ${OpenCV_INCLUDE
 
 # Add the executable
 add_executable(solver src/solver.cpp src/processData.cpp src/Classifier.cpp src/dynamicSlam.cpp)
-target_link_libraries(solver ${CERES_LIBRARIES})
-
-add_executable(visualizer src/visualize.cpp)
-target_link_libraries(visualizer ${CERES_LIBRARIES} ${OpenCV_LIBRARIES})
+target_link_libraries(solver ${CERES_LIBRARIES} ${OpenCV_LIBRARIES})
 
