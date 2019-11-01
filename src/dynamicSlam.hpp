@@ -9,7 +9,6 @@ namespace DynamicSLAM{
 			std::vector<std::vector<double> > distanceTranspose;
 			std::vector<std::vector<double> > distances;
 			std::vector<double> standardDeviations;	
-			std::vector<double> featureSum;	
 
 			void resizeVec(std::vector<std::vector<double> > &vec, const unsigned short ROWS, const unsigned short COLUMNS){
 			    vec.resize(ROWS);
@@ -18,7 +17,9 @@ namespace DynamicSLAM{
 			    }
 			}
 			
-			void calculateStandardDeviation(std::vector<double> data, double &stdDev, double &sum);
+			void calculateStandardDeviation(std::vector<double> data, double &stdDev);
+
+			double calculateFeatureSum(std::vector<double> data1, std::vector<double> data2);
 			
 		
 		public:
