@@ -18,7 +18,7 @@ namespace DynamicSLAM{
 			    }
 			}
 			
-			void calculateStandardDeviation(std::vector<double> data, double &stdDev, double &sum);
+			void calculateStandardDeviation(std::vector<double> data, double &stdDev);
 			
 		
 		public:

@@ -22,16 +22,13 @@ namespace  DynamicSLAM{
 	}
 
 	void Propensity::calculateDistances(std::vector<std::vector<Point> > &scans){
-
 		Eigen::MatrixXd sigma_inv = Eigen::MatrixXd::Identity(2,2);
 		resizeVec(distances,scans.size()-1,scans[0].size());
 		resizeVec(distanceTranspose,scans[0].size(),scans.size()-1);
 		standardDeviations.resize(scans[0].size());
-		featureSum.resize(scans[0].size());
+		
 
 		double stdDev = 0;
-		double sum = 0;
-
 
 		for(int scan=1; scan<scans.size(); scan++){
 			for(int feature=0; feature<scans[0].size();feature++){
@@ -44,21 +41,18 @@ namespace  DynamicSLAM{
 		}
 
 		for(int i=0;i<distanceTranspose.size();i++){
-			Propensity::calculateStandardDeviation(distanceTranspose[i], stdDev, sum);
+			Propensity::calculateStandardDeviation(distanceTranspose[i], stdDev);
 			standardDeviations[i] = stdDev;
-			featureSum[i] = sum;
 		}
-
 	}
 
-	void Propensity::calculateStandardDeviation(std::vector<double> data, double &stdDev, double &sum){
+	void Propensity::calculateStandardDeviation(std::vector<double> data, double &stdDev){
 		int data_length = data.size();
 		double variance = 0;
 	    double mean = 0;
+	    double sum = 0;
 
 	    stdDev = 0;
-	    sum = 0;
-
 	    for(int i=0; i<data_length;i++){
 	    	sum += data[i];
 	    }
@@ -74,12 +68,12 @@ namespace  DynamicSLAM{
 	}
 }
 
-int main(){
-	//Avinash :  Main function is for testing
-	// DynamicSLAM::Propensity object_propensity = DynamicSLAM::Propensity();
-	// std::vector<double> nums1(5);
-	// std::vector<std::vector<double> > nums2;
-	// std::vector<double> nums3;
-	// object_propensity.calculatePropensity(nums1,nums2,nums3);
-	return 0;
-}
+// int main(){
+// 	//Avinash :  Main function is for testing
+// 	DynamicSLAM::Propensity object_propensity = DynamicSLAM::Propensity();
+// 	std::vector<double> nums1(5);
+// 	std::vector<std::vector<double> > nums2;
+// 	std::vector<double> nums3;
+// 	object_propensity.calculatePropensity(nums1,nums2,nums3);
+// 	return 0;
+// }
