@@ -15,6 +15,7 @@
 // Contains various cost function struct specifications
 #include "processData.hpp"
 #include "Classifier.hpp"
+#include "dynamicSlam.hpp"
 
 int main(int argc, char** argv){
     google::InitGoogleLogging(argv[0]);
@@ -22,7 +23,16 @@ int main(int argc, char** argv){
     std::string filename("../data/robotdata1.log");
     ProcessData processData(filename);
 
+    DynamicSLAM::Propensity propensity;
+
     auto correspondedScans = processData.getCorrespondedScans(100, 5);
+    propensity.calculateDistances(correspondedScans);
+
+    std::vector<std::vector<double>> Pij;
+    std::vector<double> Weight;
+
+    propensity.calculatePropensity(Pij, Weight);
+
     std::cout << "Correspondences out of 180 : " << correspondedScans[0].size() << std::endl;
 
     std::vector<bool> init;

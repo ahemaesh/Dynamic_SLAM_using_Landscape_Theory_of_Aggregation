@@ -3,7 +3,6 @@
 //
 
 #include "processData.hpp"
-#include <math.h>
 #include <assert.h>
 #include <cmath>
 
