@@ -8,7 +8,7 @@
 
 ProcessData::ProcessData(const std::string& filename)
 {
-    this->matchRadius = 10.0;
+    this->matchRadius = 100.0;
     logFile.open(filename);
     readLog();
 }

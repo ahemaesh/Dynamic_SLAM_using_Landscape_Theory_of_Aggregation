@@ -2,11 +2,15 @@
 #include <eigen3/Eigen/Dense>
 #include <iostream>
 #include <vector>
+#include <numeric>
+
 
 #include "dynamicSlam.hpp"
 
 namespace  DynamicSLAM{
-	void Propensity::calculatePropensity(std::vector<std::vector<double> > &propensityScore, std::vector<double> &playerWeight){
+	void Propensity::calculatePropensity(std::vector<std::vector<double> > &propensityScore,
+                                         std::vector<double> &playerWeight,
+                                         std::vector<bool> &init) {
 		// vector initialization of fixed size
 		int timeStep = distances.size();
 		int vecSize = distances[0].size();  
@@ -16,18 +20,26 @@ namespace  DynamicSLAM{
 		for(int i=0;i<propensityScore.size();i++){
 			for(int j=0;j<propensityScore[0].size();j++){
 				propensityScore[i][j] = Propensity::calculateFeatureSum(distanceTranspose[i],distanceTranspose[j]);
+
 			}
 			playerWeight[i] = 1/standardDeviations[i];
 		}
+
+        for (size_t i = 0; i < distanceTranspose.size(); i++)
+        {
+            double avg = std::accumulate(distanceTranspose[i].begin(), distanceTranspose[i].end(), 0.0)/double(distanceTranspose[i].size());
+
+            init[i] =(avg > this->thersholdInit);
+        }
 	}
 
 	double Propensity::calculateFeatureSum(std::vector<double> data1, std::vector<double> data2){
-		int sum = 0;
-		for(int i=0;i<data1.size();i++){
+		double sum = 0;
+		for(int i=0;i<int(data1.size());i++){
 			sum += abs(data1[i]-data2[i]);
 		}
 
-		return sum/data1.size();
+		return (1.0 - (sum/double(data1.size())));
 	}
 
 	void Propensity::calculateDistances(std::vector<std::vector<Point> > &scans){
@@ -42,9 +54,12 @@ namespace  DynamicSLAM{
 			for(int feature=0; feature<scans[0].size();feature++){
 				Eigen::Vector2d  point1(scans[0][feature].x,scans[0][feature].y);
 				Eigen::Vector2d  point2(scans[scan][feature].x,scans[scan][feature].y);
-				auto point = point1-point2;
-				distances[scan-1][feature] = sqrt(point.transpose()*sigma_inv*point);
-				distanceTranspose[feature].push_back(distances[scan-1][feature]);
+				//std::cout << "point1:" << point1 << std::endl;
+                //std::cout << "point2:" << point2 << std::endl;
+                Eigen::Vector2d point = point1-point2;
+                //std::cout << "point:" << point << std::endl;
+                distances[scan-1][feature] = sqrt(point.transpose()*sigma_inv*point);
+				distanceTranspose[feature][scan-1]=(distances[scan-1][feature]);
 			}
 		}
 

@@ -56,7 +56,7 @@ void Classifier::optimize(ceres::Problem &problem) const {
     options.linear_solver_type = ceres::DENSE_SCHUR;
     options.preconditioner_type = ceres::JACOBI;
     options.use_inner_iterations = true;
-    options.minimizer_progress_to_stdout = false;
+    options.minimizer_progress_to_stdout = true;
 
     // Solve the problem and print the results
     ceres::Solver::Summary summary;

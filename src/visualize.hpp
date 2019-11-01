@@ -39,11 +39,11 @@ void plotPoints(std::vector<Point> pts, std::vector<bool> status)
     {
         if(status[i])
         {
-            cv::circle(plot, cv::Point(pts[i].y + center_y, pts[i].x + center_x), point_radius, green, thickness);
+            cv::circle(plot, cv::Point(pts[i].y + center_y, pts[i].x + center_x), point_radius, red, thickness);
         }
         else
         {
-            cv::circle(plot, cv::Point(pts[i].y + center_y, pts[i].x + center_x), point_radius, red, thickness);
+            cv::circle(plot, cv::Point(pts[i].y + center_y, pts[i].x + center_x), point_radius, green, thickness);
         }
     }
     cv::rotate(plot, plot, cv::ROTATE_90_COUNTERCLOCKWISE);
