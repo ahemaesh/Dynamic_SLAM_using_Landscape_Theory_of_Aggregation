@@ -1,7 +1,3 @@
-/*
- * Pose adjustmer using keypoint likelihoods from a single image
- * Author: Krishna Murthy
-*/
 
 #include <cmath>
 #include <cstdio>
@@ -12,7 +8,6 @@
 #include <ceres/iteration_callback.h>
 #include <ceres/rotation.h>
 
-// Contains various cost function struct specifications
 #include "processData.hpp"
 #include "Classifier.hpp"
 #include "Classifier2.hpp"
@@ -42,6 +37,7 @@ int main(int argc, char** argv){
     propensity.calculatePropensity(Pij, Weight, state);
 
     randomInitialization(state);
+    plotPoints(correspondedScans[0], state);
 
     Classifier2 classifier;
     classifier.classify(Pij, Weight, state);
@@ -55,7 +51,8 @@ void randomInitialization(std::vector<bool> &state2)
 {
     srand(time(nullptr));
 
-    for (size_t i = 0; i < state2.size(); ++i) {
-        state2[i] = rand() % 2;
+    for (auto && i : state2)
+    {
+        i = rand() % 2;
     }
 }
