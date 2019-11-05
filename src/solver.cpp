@@ -24,26 +24,29 @@ int main(int argc, char** argv){
     std::string filename("../data/robotdata1.log");
     ProcessData processData(filename);
 
-    auto correspondedScans = processData.getCorrespondedScans(200, 5);
-    std::cout << "Correspondences out of 180 : " << correspondedScans[0].size() << std::endl;
+    for (int i = 0; i < 700; i++)
+    {
+
+        auto correspondedScans = processData.getCorrespondedScans(i, 10);
+        std::cout << "Correspondences out of 180 : " << correspondedScans[0].size() << std::endl;
 
 
-    std::vector<bool> state(correspondedScans[0].size(), false);
-    std::vector<std::vector<double>> Pij;
-    std::vector<double> Weight;
+        std::vector<bool> state(correspondedScans[0].size(), false);
+        std::vector<std::vector<double>> Pij;
+        std::vector<double> Weight;
 
-    DynamicSLAM::Propensity propensity;
-    propensity.calculateDistances(correspondedScans);
-    propensity.calculatePropensity(Pij, Weight, state);
+        DynamicSLAM::Propensity propensity;
+        propensity.calculateDistances(correspondedScans);
+        propensity.calculatePropensity(Pij, Weight, state);
 
-    randomInitialization(state);
-    plotPoints(correspondedScans[0], state);
+        randomInitialization(state);
+//        plotPoints(correspondedScans[0], state);
 
-    Classifier2 classifier;
-    classifier.classify(Pij, Weight, state);
+        Classifier2 classifier;
+        classifier.classify(Pij, Weight, state);
 
-    plotPoints(correspondedScans[0], state);
-
+        plotPoints(correspondedScans[0], state);
+    }
     return 0;
 }
 

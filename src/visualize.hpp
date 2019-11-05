@@ -48,7 +48,7 @@ void plotPoints(std::vector<Point> pts, std::vector<bool> status)
     }
     cv::rotate(plot, plot, cv::ROTATE_90_COUNTERCLOCKWISE);
     cv::imshow("Laser scan plot", plot);
-    cv::waitKey(0);
+    cv::waitKey(10);
 }
 /*
 
