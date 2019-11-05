@@ -18,6 +18,8 @@ private:
     int numIteration;
     double computeCostChange(const std::vector<std::vector<double>> &P, const std::vector<double> &S,
                              int featureIndex, std::vector<bool> &state);
+
+    void correctClassAssignment(const std::vector<double> &S, std::vector<bool> &state);
 };
 
 

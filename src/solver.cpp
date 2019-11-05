@@ -24,7 +24,7 @@ int main(int argc, char** argv){
     std::string filename("../data/robotdata1.log");
     ProcessData processData(filename);
 
-    auto correspondedScans = processData.getCorrespondedScans(100, 5);
+    auto correspondedScans = processData.getCorrespondedScans(200, 5);
     std::cout << "Correspondences out of 180 : " << correspondedScans[0].size() << std::endl;
 
 

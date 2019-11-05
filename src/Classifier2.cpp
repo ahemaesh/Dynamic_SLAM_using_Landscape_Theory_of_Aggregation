@@ -33,6 +33,41 @@ void Classifier2::classify(const std::vector<std::vector<double>> &P, const std:
         }
     }
 
+    correctClassAssignment(S, state);
+
+}
+
+void Classifier2::correctClassAssignment(const std::vector<double> &S, std::vector<bool> &state)
+{
+    double weight0 = 0.0;
+    double weight1 = 0.0;
+    int count0 = 0;
+    int count1 = 0;
+
+    for (size_t i = 0; i < state.size(); i++)
+    {
+        if (!state[i])
+        {
+            count0 += 1;
+            weight0 += S[i];
+        }
+        else
+        {
+            count1 += 1;
+            weight1 += S[i];
+        }
+    }
+    weight0 /= double(count0);
+    weight1 /= double(count1);
+
+    if (weight1 > weight0)
+    {
+        for (size_t i = 0; i < state.size(); ++i)
+        {
+            state[i] = !state[i];
+        }
+        std::cout << "Classes are flipped!" << std::endl;
+    }
 }
 
 double Classifier2::computeCostChange(const std::vector<std::vector<double>> &P, const std::vector<double> &S,
