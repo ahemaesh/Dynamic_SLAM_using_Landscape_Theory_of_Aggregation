@@ -15,8 +15,13 @@
 // Contains various cost function struct specifications
 #include "processData.hpp"
 #include "Classifier.hpp"
+#include "Classifier2.hpp"
 #include "dynamicSlam.hpp"
 #include "visualize.hpp"
+#include <ctime>
+#include <cstdlib>
+
+void randomInitialization(std::vector<bool> &state2);
 
 int main(int argc, char** argv){
     google::InitGoogleLogging(argv[0]);
@@ -24,27 +29,33 @@ int main(int argc, char** argv){
     std::string filename("../data/robotdata1.log");
     ProcessData processData(filename);
 
-    DynamicSLAM::Propensity propensity;
-
     auto correspondedScans = processData.getCorrespondedScans(100, 5);
+    std::cout << "Correspondences out of 180 : " << correspondedScans[0].size() << std::endl;
 
 
-    std::vector<bool> status(correspondedScans[0].size(), false);
+    std::vector<bool> state(correspondedScans[0].size(), false);
     std::vector<std::vector<double>> Pij;
     std::vector<double> Weight;
 
+    DynamicSLAM::Propensity propensity;
     propensity.calculateDistances(correspondedScans);
-    propensity.calculatePropensity(Pij, Weight, status);
+    propensity.calculatePropensity(Pij, Weight, state);
 
-    //plotPoints(correspondedScans[0], status);
-    std::cout << "Correspondences out of 180 : " << correspondedScans[0].size() << std::endl;
+    randomInitialization(state);
 
-    Classifier classifier;
+    Classifier2 classifier;
+    classifier.classify(Pij, Weight, state);
 
-    auto ans = classifier.classify(Pij, Weight, status);
-
-    plotPoints(correspondedScans[0], ans);
+    plotPoints(correspondedScans[0], state);
 
     return 0;
+}
 
+void randomInitialization(std::vector<bool> &state2)
+{
+    srand(time(nullptr));
+
+    for (size_t i = 0; i < state2.size(); ++i) {
+        state2[i] = rand() % 2;
+    }
 }
