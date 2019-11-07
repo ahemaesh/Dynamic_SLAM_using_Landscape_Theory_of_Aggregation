@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
         sensor_msgs
         std_msgs
         tf2_ros
+        tf
         )
 
 include_directories(${catkin_INCLUDE_DIRS} ${CMAKE_INCLUDE_PATH} ${CERES_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})

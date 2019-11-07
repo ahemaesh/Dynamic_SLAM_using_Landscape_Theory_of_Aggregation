@@ -21,6 +21,8 @@
 #include <nav_msgs/Odometry.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <tf/transform_broadcaster.h>
+#include <geometry_msgs/TransformStamped.h>
 
 void randomInitialization(std::vector<bool> &state2);
 void convertToLaserScan(sensor_msgs::LaserScan &current_scan, std::vector<Point> correspondedScans, std::vector<bool> state, std::vector<double> rawScan);
@@ -30,13 +32,14 @@ int main(int argc, char** argv){
     ros::NodeHandle n;
     ros::Publisher laser_scan = n.advertise<sensor_msgs::LaserScan>("base_scan", 10);
     ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 10);
+    tf::TransformBroadcaster odom_broadcaster;
 
     google::InitGoogleLogging(argv[0]);
 
     std::string filename("../data/robotdata1.log");
     ProcessData processData(filename);
 
-    for (int i = 0; i < 1; i++)
+    for (int i = 0; i < 700; i++)
     {
 
         auto correspondedScans = processData.getCorrespondedScans(i, 10);
@@ -64,19 +67,27 @@ int main(int argc, char** argv){
 
         std::vector<double> rawScan = processData.getRawScan(i);
         Odom odom_data = processData.getSensorOdom(i);
-        tf2::Quaternion orientation;
-        orientation.setRPY( 0, 0, odom_data.theta);
-        orientation.normalize();
 
         convertToLaserScan(current_scan, correspondedScans[0], state, rawScan);
         current_scan.header.stamp = ros::Time::now();
         laser_scan.publish(current_scan);
 
-        current_odom.header.frame_id = "base_link";
-        current_odom.child_frame_id = "odom";
+        //first, we'll publish the transform over tf
+        geometry_msgs::TransformStamped odom_trans;
+        odom_trans.header.stamp = ros::Time::now();
+        odom_trans.header.frame_id = "odom";
+        odom_trans.child_frame_id = "base_link";
+        odom_trans.transform.translation.x = odom_data.x / 100.0;
+        odom_trans.transform.translation.y = odom_data.y / 100.0;
+        odom_trans.transform.rotation = tf::createQuaternionMsgFromYaw(odom_data.theta);
+
+        odom_broadcaster.sendTransform(odom_trans);
+
+        current_odom.header.frame_id = "odom";
+        current_odom.child_frame_id = "base_link";
         current_odom.pose.pose.position.x = odom_data.x / 100.0;
         current_odom.pose.pose.position.y = odom_data.y / 100.0;
-        current_odom.pose.pose.orientation = tf2::toMsg(orientation);
+        current_odom.pose.pose.orientation = tf::createQuaternionMsgFromYaw(odom_data.theta);
         current_odom.header.stamp = ros::Time::now();
         odom_pub.publish(current_odom);
     }
