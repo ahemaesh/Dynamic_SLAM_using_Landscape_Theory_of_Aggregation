@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="tf" type="static_transform_publisher" name="sensor_to_base_link" args="0.25 0 0 0 0 0 1 base_link laser 1" />
+  <!-- node name="D_SLAM" pkg="D_SLAM" type="solver" output="screen"/-->
+</launch>
