@@ -14,6 +14,7 @@ struct Point
 {
     double x;
     double y;
+    int id;
 };
 
 struct Odom
@@ -29,6 +30,8 @@ class ProcessData
 public:
     ProcessData(const std::string& filename);
     std::vector<std::vector<Point>> getCorrespondedScans(int timeStamp, int windowSize);
+    std::vector<double> getRawScan(int itr);
+    Odom getSensorOdom(int itr);
 
 private:
     void readLog();

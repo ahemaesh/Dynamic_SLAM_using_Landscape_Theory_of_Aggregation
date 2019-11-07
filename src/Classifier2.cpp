@@ -26,7 +26,7 @@ void Classifier2::classify(const std::vector<std::vector<double>> &P, const std:
             }
         }
 
-        std::cout << "Optimizing: Total Variables Changed = " << changeCount << std::endl;
+        // std::cout << "Optimizing: Total Variables Changed = " << changeCount << std::endl;
         if (changeCount == 0)
         {
             break;
@@ -66,7 +66,7 @@ void Classifier2::correctClassAssignment(const std::vector<double> &S, std::vect
         {
             state[i] = !state[i];
         }
-        std::cout << "Classes are flipped!" << std::endl;
+        // std::cout << "Classes are flipped!" << std::endl;
     }
 }
 

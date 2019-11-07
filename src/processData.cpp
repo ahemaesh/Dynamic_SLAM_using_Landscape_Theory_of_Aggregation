@@ -42,8 +42,9 @@ void ProcessData::readLog()
                 logFile >> range;
 
                 auto angle = sensorOdom.theta + (i+1)*M_PI/180.0 - M_PI/2;
-                point.x = sensorOdom.x + range*cos(angle);
+                point.x = 0.25 + sensorOdom.x + range*cos(angle);   //Added the laser offset from assignment 1 @akgandhi
                 point.y = sensorOdom.y + range*sin(angle);
+                point.id = i;
 
                 rawScan.emplace_back(range);
                 scan.emplace_back(point);
@@ -76,7 +77,7 @@ std::vector<std::vector<Point>> ProcessData::getCorrespondedScans(int timeStamp,
 
         for (int a = timeStamp + 1; a < timeStamp + windowSize; a++)
         {
-            Point matchingPoint{0.0, 0.0};
+            Point matchingPoint{0.0, 0.0, -1};
             double minDist = -1.0;
 
             for (int j = 0; j < int(this->scans[a].size()); ++j)
@@ -112,4 +113,14 @@ std::vector<std::vector<Point>> ProcessData::getCorrespondedScans(int timeStamp,
     }
 
     return correspondedScans;
+}
+
+std::vector<double> ProcessData::getRawScan(int itr)
+{
+    return this->rawScans[itr];
+}
+
+Odom ProcessData::getSensorOdom(int itr)
+{
+    return this->odometrySensor[itr];
 }
