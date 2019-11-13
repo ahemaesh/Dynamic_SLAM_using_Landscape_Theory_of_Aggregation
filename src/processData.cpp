@@ -5,11 +5,13 @@
 #include "processData.hpp"
 #include <assert.h>
 #include <cmath>
+#include <ros/ros.h>
+#include <ros/package.h>
 
 ProcessData::ProcessData(const std::string& filename)
 {
     this->matchRadius = 100.0;
-    logFile.open(filename);
+    logFile.open(ros::package::getPath("D_SLAM") + filename);
     readLog();
 }
 
@@ -42,7 +44,7 @@ void ProcessData::readLog()
                 logFile >> range;
 
                 auto angle = sensorOdom.theta + (i+1)*M_PI/180.0 - M_PI/2;
-                point.x = 0.25 + sensorOdom.x + range*cos(angle);   //Added the laser offset from assignment 1 @akgandhi
+                point.x = sensorOdom.x + range*cos(angle);   //Added the laser offset from assignment 1 @akgandhi
                 point.y = sensorOdom.y + range*sin(angle);
                 point.id = i;
 
@@ -122,5 +124,5 @@ std::vector<double> ProcessData::getRawScan(int itr)
 
 Odom ProcessData::getSensorOdom(int itr)
 {
-    return this->odometrySensor[itr];
+    return this->odometryVehicle[itr];
 }

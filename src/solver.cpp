@@ -28,15 +28,18 @@ void randomInitialization(std::vector<bool> &state2);
 void convertToLaserScan(sensor_msgs::LaserScan &current_scan, std::vector<Point> correspondedScans, std::vector<bool> state, std::vector<double> rawScan);
 
 int main(int argc, char** argv){
-    ros::init(argc, argv, "D_SLAM");
+    ros::init(argc, argv, "D_SLAM_solver");
     ros::NodeHandle n;
-    ros::Publisher laser_scan = n.advertise<sensor_msgs::LaserScan>("base_scan", 10);
+    ros::Rate rate(30);
+
+
+    ros::Publisher laser_scan = n.advertise<sensor_msgs::LaserScan>("scan", 10);
     ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 10);
     tf::TransformBroadcaster odom_broadcaster;
 
     google::InitGoogleLogging(argv[0]);
 
-    std::string filename("../data/robotdata1.log");
+    std::string filename("/data/robotdata1.log");
     ProcessData processData(filename);
 
     for (int i = 0; i < 700; i++)
@@ -54,13 +57,13 @@ int main(int argc, char** argv){
         propensity.calculateDistances(correspondedScans);
         propensity.calculatePropensity(Pij, Weight, state);
 
-        randomInitialization(state);
+//        randomInitialization(state);
 //        plotPoints(correspondedScans[0], state);
 
         Classifier2 classifier;
         classifier.classify(Pij, Weight, state);
 
-        // plotPoints(correspondedScans[0], state);
+        //plotPoints(correspondedScans[0], state);
 
         sensor_msgs::LaserScan current_scan;
         nav_msgs::Odometry current_odom;
@@ -69,6 +72,8 @@ int main(int argc, char** argv){
         Odom odom_data = processData.getSensorOdom(i);
 
         convertToLaserScan(current_scan, correspondedScans[0], state, rawScan);
+//        convertToLaserScan(current_scan, correspondedScans[0], std::vector<bool>(state.size(), true), rawScan);
+
         current_scan.header.stamp = ros::Time::now();
         laser_scan.publish(current_scan);
 
@@ -90,6 +95,8 @@ int main(int argc, char** argv){
         current_odom.pose.pose.orientation = tf::createQuaternionMsgFromYaw(odom_data.theta);
         current_odom.header.stamp = ros::Time::now();
         odom_pub.publish(current_odom);
+
+        rate.sleep();
     }
     return 0;
 }
@@ -107,25 +114,24 @@ void randomInitialization(std::vector<bool> &state2)
 void convertToLaserScan(sensor_msgs::LaserScan &current_scan, std::vector<Point> correspondedScans, std::vector<bool> state, std::vector<double> rawScan)
 {
     current_scan.header.frame_id = "laser";
-    current_scan.angle_min = 0.0;
-    current_scan.angle_max = M_PI;
+    current_scan.angle_min = -M_PI/2.0;
+    current_scan.angle_max = M_PI/2.0;
     current_scan.angle_increment = M_PI / 180.0;
     current_scan.range_min = 0.0;
     current_scan.range_max = 80.0;
 
-    std::vector<float> ranges(180);
+    uint32_t ranges_size = std::ceil((current_scan.angle_max - current_scan.angle_min) / current_scan.angle_increment);
+    current_scan.ranges.assign(ranges_size, std::numeric_limits<double>::infinity());
+
     // std::cout << "Points got: " << correspondedScans.size() << " " << std::count(state.begin(), state.end(), true) << std::endl;
-    for(int i=0; i<180; i++)
+
+    for(size_t i = 0; i < correspondedScans.size(); i++)
     {
-        if(correspondedScans[i].id == i && state[i])
+        if (!state[i])
         {
-            ranges[i] = rawScan[i]/100.0;
-        }
-        else
-        {
-            ranges[i] = -1.0;
+            current_scan.ranges[correspondedScans[i].id] = rawScan[correspondedScans[i].id]/100.0;
         }
     }
+
     // std::cout << std::endl;
-    current_scan.ranges = ranges;
 }
