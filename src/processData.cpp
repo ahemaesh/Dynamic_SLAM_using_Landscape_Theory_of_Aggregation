@@ -126,3 +126,8 @@ Odom ProcessData::getSensorOdom(int itr)
 {
     return this->odometryVehicle[itr];
 }
+
+int ProcessData::getScanCount()
+{
+    return int(this->rawScans.size());
+}

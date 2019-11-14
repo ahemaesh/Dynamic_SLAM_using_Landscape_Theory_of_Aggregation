@@ -32,6 +32,7 @@ public:
     std::vector<std::vector<Point>> getCorrespondedScans(int timeStamp, int windowSize);
     std::vector<double> getRawScan(int itr);
     Odom getSensorOdom(int itr);
+    int getScanCount();
 
 private:
     void readLog();

@@ -32,6 +32,7 @@ int main(int argc, char** argv){
     ros::NodeHandle n;
     ros::Rate rate(30);
 
+    int windowSize = 20;
 
     ros::Publisher laser_scan = n.advertise<sensor_msgs::LaserScan>("scan", 10);
     ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 10);
@@ -42,10 +43,10 @@ int main(int argc, char** argv){
     std::string filename("/data/robotdata1.log");
     ProcessData processData(filename);
 
-    for (int i = 0; i < 700; i++)
+    for (int i = 0; i <= processData.getScanCount() - windowSize; i++)
     {
 
-        auto correspondedScans = processData.getCorrespondedScans(i, 10);
+        auto correspondedScans = processData.getCorrespondedScans(i, windowSize);
         // std::cout << "Correspondences out of 180 : " << correspondedScans[0].size() << std::endl;
 
 
@@ -72,7 +73,6 @@ int main(int argc, char** argv){
         Odom odom_data = processData.getSensorOdom(i);
 
         convertToLaserScan(current_scan, correspondedScans[0], state, rawScan);
-//        convertToLaserScan(current_scan, correspondedScans[0], std::vector<bool>(state.size(), true), rawScan);
 
         current_scan.header.stamp = ros::Time::now();
         laser_scan.publish(current_scan);
