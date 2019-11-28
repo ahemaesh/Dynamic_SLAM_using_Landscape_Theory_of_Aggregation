@@ -80,8 +80,15 @@ void cvtToLog(const nav_msgs::OdometryConstPtr& odom, const sensor_msgs::LaserSc
 	output = "L " + std::to_string(odom->pose.pose.position.x) + " " + std::to_string(odom->pose.pose.position.y) + " " + std::to_string(yaw) + " " + std::to_string(odom->pose.pose.position.x) + " " + std::to_string(odom->pose.pose.position.y) + " " + std::to_string(yaw);
 	for(int i=0; i<180; i++)
 	{
-		double curr_val = lscan->ranges[i];
-		output = output + " " + std::to_string(std::min(curr_val, 80.0));
+		float curr_val = lscan->ranges[i];
+		if(std::to_string(std::min(curr_val, 80.0f)) == "nan")
+		{
+			output = output + " " + std::to_string(80.0f);
+		}
+		else
+		{
+			output = output + " " + std::to_string(curr_val);
+		}
 	}
 	//converting long double stamp is not available hence we are just using the sequence as time!
 	output += std::to_string(lscan->header.seq) + "\n";
