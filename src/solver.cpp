@@ -1,15 +1,9 @@
-
 #include <cmath>
 #include <cstdio>
 #include <fstream>
 #include <iostream>
 
-#include <ceres/loss_function.h>
-#include <ceres/iteration_callback.h>
-#include <ceres/rotation.h>
-
 #include "processData.hpp"
-#include "Classifier.hpp"
 #include "Classifier2.hpp"
 #include "dynamicSlam.hpp"
 #include "visualize.hpp"
@@ -38,7 +32,7 @@ int main(int argc, char** argv){
     ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 10);
     tf::TransformBroadcaster odom_broadcaster;
 
-    google::InitGoogleLogging(argv[0]);
+    //google::InitGoogleLogging(argv[0]);
 
     std::string filename("/data/robotdata1.log");
     ProcessData processData(filename);
