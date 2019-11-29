@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 2.8)
 project(D_SLAM)
 set(CMAKE_CXX_STANDARD 11)
 
-catkin_package()
 find_package(OpenCV REQUIRED)
 find_package(catkin REQUIRED COMPONENTS
         roscpp
