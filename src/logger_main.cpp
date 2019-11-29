@@ -41,7 +41,7 @@ void lscanCallback(const sensor_msgs::LaserScan::ConstPtr& lscan)
 	
 	if(msg_counter % data_factor == 0)
 	{
-		output = "L " + std::to_string(current_odom.pose.pose.position.x) + " " + std::to_string(current_odom.pose.pose.position.y) + " " + std::to_string(yaw) + " " + std::to_string(current_odom.pose.pose.position.x) + " " + std::to_string(current_odom.pose.pose.position.y) + " " + std::to_string(yaw);
+		output = "L " + std::to_string(current_odom.pose.pose.position.x) + " " + std::to_string(current_odom.pose.pose.position.y) + " " + std::to_string(yaw) + " " + std::to_string(current_odom.pose.pose.position.x + 0.31 * cos(yaw)) + " " + std::to_string(current_odom.pose.pose.position.y + 0.31 * sin(yaw)) + " " + std::to_string(yaw);
 		for(int i=0; i<180; i++)
 		{
 			float curr_val = lscan->ranges[i];
@@ -101,7 +101,7 @@ int main(int argc, char **argv)
 	ros::NodeHandle nh;
 	std::string odom_topic = "odometry/filtered";
 	std::string lscan_topic = "scan";
-	std::string logfile_name = "/data/test_log.txt";
+	std::string logfile_name = "/data/test_log.log";
 	data_factor = 4.0;
 	std::string nodeName = (ros::this_node::getName());
 

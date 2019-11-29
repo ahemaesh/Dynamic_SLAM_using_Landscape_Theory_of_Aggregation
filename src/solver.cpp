@@ -34,7 +34,7 @@ int main(int argc, char** argv){
 
     //google::InitGoogleLogging(argv[0]);
 
-    std::string filename("/data/robotdata1.log");
+    std::string filename("/data/test_log.log");
     ProcessData processData(filename);
 
     for (int i = 0; i <= processData.getScanCount() - windowSize; i++)
