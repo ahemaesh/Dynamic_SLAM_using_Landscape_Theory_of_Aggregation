@@ -1,15 +1,9 @@
-
 #include <cmath>
 #include <cstdio>
 #include <fstream>
 #include <iostream>
 
-#include <ceres/loss_function.h>
-#include <ceres/iteration_callback.h>
-#include <ceres/rotation.h>
-
 #include "processData.hpp"
-#include "Classifier.hpp"
 #include "Classifier2.hpp"
 #include "dynamicSlam.hpp"
 #include "visualize.hpp"
@@ -39,10 +33,10 @@ int main(int argc, char** argv){
     ros::Publisher odom_raw_pub = n.advertise<nav_msgs::Odometry>("odom_raw", 10);
     tf::TransformBroadcaster odom_broadcaster;
 
-    google::InitGoogleLogging(argv[0]);
 
-    std::string filename("/data/robotdata1.log");
+    std::string filename("/data/test_log.log");
     ProcessData processData(filename);
+    std::cout << "Data Processed!!! " << processData.getScanCount() << std::endl;
 
     for (int i = 0; i <= processData.getScanCount() - windowSize; i++)
     {
@@ -66,6 +60,8 @@ int main(int argc, char** argv){
         classifier.classify(Pij, Weight, state);
 
         //plotPoints(correspondedScans[0], state);
+
+        // std::fill(state.begin(), state.end(), false);
 
         sensor_msgs::LaserScan current_scan;
         nav_msgs::Odometry current_odom;
