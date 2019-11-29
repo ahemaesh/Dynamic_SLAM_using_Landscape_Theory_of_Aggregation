@@ -37,7 +37,6 @@ int main(int argc, char** argv){
     std::string filename("/data/test_log.log");
     ProcessData processData(filename);
     std::cout << "Data Processed!!! " << processData.getScanCount() << std::endl;
-    ROS_INFO("DATATATATAT!!!");
 
     for (int i = 0; i <= processData.getScanCount() - windowSize; i++)
     {
@@ -61,6 +60,8 @@ int main(int argc, char** argv){
         classifier.classify(Pij, Weight, state);
 
         //plotPoints(correspondedScans[0], state);
+
+        // std::fill(state.begin(), state.end(), false);
 
         sensor_msgs::LaserScan current_scan;
         nav_msgs::Odometry current_odom;
@@ -91,8 +92,7 @@ int main(int argc, char** argv){
         current_odom.pose.pose.orientation = tf::createQuaternionMsgFromYaw(odom_data.theta);
         current_odom.header.stamp = ros::Time::now();
         odom_pub.publish(current_odom);
-        std::cout << "Sending!!! \n";
-        ROS_INFO("Sending! \n");
+        
         rate.sleep();
     }
     return 0;

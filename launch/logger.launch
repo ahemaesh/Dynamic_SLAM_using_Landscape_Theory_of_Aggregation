@@ -1,0 +1,10 @@
+<launch>
+  <node name="D_SLAM" pkg="D_SLAM" type="logwriter" output="screen">
+    <rosparam>
+      data_factor: 4
+      odom_topic: odometry/filtered
+      lscan_topic: scan
+      logfile_name: /data/test_log.log
+    </rosparam>
+    </node>
+</launch>
