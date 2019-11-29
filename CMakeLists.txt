@@ -13,6 +13,13 @@ find_package(catkin REQUIRED COMPONENTS
         roslib
         )
 
+catkin_package(
+#  INCLUDE_DIRS include
+#  LIBRARIES box_estimation
+#  CATKIN_DEPENDS cv_bridge image_transport roscpp sensor_msgs std_msgs tf tf
+#  DEPENDS system_lib
+)
+
 include_directories(${catkin_INCLUDE_DIRS} ${CMAKE_INCLUDE_PATH} ${CERES_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
 
 # Add the executable

@@ -36,6 +36,7 @@ int main(int argc, char** argv){
 
     ros::Publisher laser_scan = n.advertise<sensor_msgs::LaserScan>("scan", 10);
     ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 10);
+    ros::Publisher odom_raw_pub = n.advertise<nav_msgs::Odometry>("odom_raw", 10);
     tf::TransformBroadcaster odom_broadcaster;
 
     google::InitGoogleLogging(argv[0]);
@@ -79,13 +80,16 @@ int main(int argc, char** argv){
 
         //first, we'll publish the transform over tf
         geometry_msgs::TransformStamped odom_trans;
-        odom_trans.header.stamp = ros::Time::now();
         odom_trans.header.frame_id = "odom";
         odom_trans.child_frame_id = "base_link";
         odom_trans.transform.translation.x = odom_data.x / 100.0;
         odom_trans.transform.translation.y = odom_data.y / 100.0;
         odom_trans.transform.rotation = tf::createQuaternionMsgFromYaw(odom_data.theta);
+        odom_trans.header.stamp = ros::Time::now();
 
+        odom_broadcaster.sendTransform(odom_trans);
+        odom_trans.header.frame_id = "map";
+        odom_trans.child_frame_id = "odom_raw";
         odom_broadcaster.sendTransform(odom_trans);
 
         current_odom.header.frame_id = "odom";
@@ -95,6 +99,10 @@ int main(int argc, char** argv){
         current_odom.pose.pose.orientation = tf::createQuaternionMsgFromYaw(odom_data.theta);
         current_odom.header.stamp = ros::Time::now();
         odom_pub.publish(current_odom);
+
+        current_odom.header.frame_id = "map";
+        current_odom.child_frame_id = "base_link_raw";
+        odom_raw_pub.publish(current_odom);
 
         rate.sleep();
     }
