@@ -34,8 +34,10 @@ int main(int argc, char** argv){
 
     //google::InitGoogleLogging(argv[0]);
 
-    std::string filename("/data/robotdata1.log");
+    std::string filename("/data/test_log.log");
     ProcessData processData(filename);
+    std::cout << "Data Processed!!! " << processData.getScanCount() << std::endl;
+    ROS_INFO("DATATATATAT!!!");
 
     for (int i = 0; i <= processData.getScanCount() - windowSize; i++)
     {
@@ -89,7 +91,8 @@ int main(int argc, char** argv){
         current_odom.pose.pose.orientation = tf::createQuaternionMsgFromYaw(odom_data.theta);
         current_odom.header.stamp = ros::Time::now();
         odom_pub.publish(current_odom);
-
+        std::cout << "Sending!!! \n";
+        ROS_INFO("Sending! \n");
         rate.sleep();
     }
     return 0;
