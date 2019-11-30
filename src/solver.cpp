@@ -114,7 +114,7 @@ int main(int argc, char** argv){
         odom_pub.publish(current_odom);
 
         current_odom.header.frame_id = "map";
-        current_odom.child_frame_id = "base_link_raw";
+        current_odom.child_frame_id = "odom_raw";
         odom_raw_pub.publish(current_odom);
 
         rate.sleep();
