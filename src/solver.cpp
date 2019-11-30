@@ -45,9 +45,10 @@ int main(int argc, char** argv){
     image_transport::ImageTransport it(n);
     image_transport::Publisher image_pub = it.advertise("/D_SLAM/processed_lscan", 1);
     tf::TransformBroadcaster odom_broadcaster;
+    
+    std::string filename;
+    n.param<std::string>("dataset", filename, "/data/test_log.log");
 
-
-    std::string filename("/data/test_log.log");
     ProcessData processData(filename);
     std::cout << "Data Processed!!! " << processData.getScanCount() << std::endl;
 
