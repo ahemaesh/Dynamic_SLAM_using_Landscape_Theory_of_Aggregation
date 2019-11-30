@@ -2,6 +2,9 @@
 #include <cstdio>
 #include <fstream>
 #include <iostream>
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/highgui.hpp>
 
 #include "processData.hpp"
 #include "Classifier2.hpp"
@@ -17,6 +20,9 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf/transform_broadcaster.h>
 #include <geometry_msgs/TransformStamped.h>
+#include <image_transport/image_transport.h>
+#include <cv_bridge/cv_bridge.h>
+#include <sensor_msgs/image_encodings.h>
 
 void randomInitialization(std::vector<bool> &state2);
 void convertToLaserScan(sensor_msgs::LaserScan &current_scan, std::vector<Point> correspondedScans, std::vector<bool> state, std::vector<double> rawScan);
@@ -28,9 +34,16 @@ int main(int argc, char** argv){
 
     int windowSize = 20;
 
+    cv_bridge::CvImage img_bridge;
+    sensor_msgs::Image img_msg;
+    std_msgs::Header header;
+
     ros::Publisher laser_scan = n.advertise<sensor_msgs::LaserScan>("scan", 10);
     ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 10);
     ros::Publisher odom_raw_pub = n.advertise<nav_msgs::Odometry>("odom_raw", 10);
+
+    image_transport::ImageTransport it(n);
+    image_transport::Publisher image_pub = it.advertise("/D_SLAM/processed_lscan", 1);
     tf::TransformBroadcaster odom_broadcaster;
 
 
@@ -53,15 +66,19 @@ int main(int argc, char** argv){
         propensity.calculateDistances(correspondedScans);
         propensity.calculatePropensity(Pij, Weight, state);
 
-//        randomInitialization(state);
-//        plotPoints(correspondedScans[0], state);
+        // randomInitialization(state);
+        // plotPoints(correspondedScans[0], state);
 
         Classifier2 classifier;
         classifier.classify(Pij, Weight, state);
 
-        //plotPoints(correspondedScans[0], state);
-
+        // comment/uncomment to disable/enable D_SLAM
         // std::fill(state.begin(), state.end(), false);
+        cv::Mat plot = plotPoints(correspondedScans[0], state);
+        header.stamp = ros::Time::now();
+        img_bridge = cv_bridge::CvImage(header, sensor_msgs::image_encodings::RGB8, plot);
+        img_bridge.toImageMsg(img_msg);
+        image_pub.publish(img_msg);
 
         sensor_msgs::LaserScan current_scan;
         nav_msgs::Odometry current_odom;

@@ -11,7 +11,8 @@
 #include <algorithm>
 #include "processData.hpp"
 
-void plotPoints(std::vector<Point> pts, std::vector<bool> status)
+
+cv::Mat plotPoints(std::vector<Point> pts, std::vector<bool> status)
 {
     decltype(pts)::iterator minWidth, maxWidth, minHeight, maxHeight;
     std::tie(minWidth, maxWidth) = std::minmax_element(pts.begin(), pts.end(), [] (Point const& s1, Point const& s2)
@@ -25,15 +26,17 @@ void plotPoints(std::vector<Point> pts, std::vector<bool> status)
     int image_width = 2 * std::max(abs(maxWidth->x), abs(minWidth->x)) + 20;
     int image_height = 2 * std::max(abs(maxHeight->y), abs(minHeight->y)) + 20;
 
+    int publish_image_height = 480, publish_image_width = 640;
+
     float center_x = image_width / 2.0, center_y = image_height / 2.0;
 
-    int point_radius = 1, thickness = 2;
+    int point_radius = 1, thickness = 5;
 
     cv::Scalar red(0, 0, 255), green(0, 255, 0), blue(255, 0, 0);
     cv::Mat plot(image_width, image_height, CV_8UC3, cv::Scalar::all(0));
 
     //plot the origin
-    cv::circle(plot, cv::Point(center_y, center_x), point_radius, blue, thickness);
+    cv::circle(plot, cv::Point(center_y, center_x), point_radius, green, thickness);
 
     for(size_t i=0; i<pts.size(); i++)
     {
@@ -43,12 +46,15 @@ void plotPoints(std::vector<Point> pts, std::vector<bool> status)
         }
         else
         {
-            cv::circle(plot, cv::Point(pts[i].y + center_y, pts[i].x + center_x), point_radius, green, thickness);
+            cv::circle(plot, cv::Point(pts[i].y + center_y, pts[i].x + center_x), point_radius, blue, thickness);
         }
     }
     cv::rotate(plot, plot, cv::ROTATE_90_COUNTERCLOCKWISE);
-    cv::imshow("Laser scan plot", plot);
-    cv::waitKey(10);
+
+    cv::resize(plot, plot, cv::Size(publish_image_width, publish_image_height), 0, 0, cv::INTER_CUBIC);
+    // cv::imshow("Laser scan plot", plot);
+    // cv::waitKey(10);
+    return plot;
 }
 /*
 

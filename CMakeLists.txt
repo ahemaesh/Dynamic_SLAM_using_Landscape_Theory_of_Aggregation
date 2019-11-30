@@ -10,6 +10,8 @@ find_package(catkin REQUIRED COMPONENTS
         tf2_ros
         tf
         roslib
+        cv_bridge
+        image_transport
         )
 
 catkin_package(
