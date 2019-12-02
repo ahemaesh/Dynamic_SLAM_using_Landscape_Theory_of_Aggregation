@@ -26,19 +26,21 @@
 
 void randomInitialization(std::vector<bool> &state2);
 void convertToLaserScan(sensor_msgs::LaserScan &current_scan, std::vector<Point> correspondedScans, std::vector<bool> state, std::vector<double> rawScan);
+void convertToNoiseScan(sensor_msgs::LaserScan &current_scan, std::vector<Point> correspondedScans, std::vector<bool> state, std::vector<double> rawScan);
 
 int main(int argc, char** argv){
     ros::init(argc, argv, "D_SLAM_solver");
     ros::NodeHandle n;
     ros::Rate rate(30);
 
-    int windowSize = 20;
+    int windowSize;
 
     cv_bridge::CvImage img_bridge;
     sensor_msgs::Image img_msg;
     std_msgs::Header header;
 
     ros::Publisher laser_scan = n.advertise<sensor_msgs::LaserScan>("scan", 10);
+    ros::Publisher laser_scan_dynamic = n.advertise<sensor_msgs::LaserScan>("scan_dynamic", 10);
     ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 10);
     ros::Publisher odom_raw_pub = n.advertise<nav_msgs::Odometry>("odom_raw", 10);
 
@@ -48,6 +50,7 @@ int main(int argc, char** argv){
     
     std::string filename;
     n.param<std::string>("dataset", filename, "/data/test_log.log");
+    n.param<int>("windowSize", windowSize, 10);
 
     ProcessData processData(filename);
     std::cout << "Data Processed!!! " << processData.getScanCount() << std::endl;
@@ -75,22 +78,28 @@ int main(int argc, char** argv){
 
         // comment/uncomment to disable/enable D_SLAM
         // std::fill(state.begin(), state.end(), false);
-        cv::Mat plot = plotPoints(correspondedScans[0], state);
+
+        /** cv::Mat plot = plotPoints(correspondedScans[0], state);
         header.stamp = ros::Time::now();
         img_bridge = cv_bridge::CvImage(header, sensor_msgs::image_encodings::RGB8, plot);
         img_bridge.toImageMsg(img_msg);
-        image_pub.publish(img_msg);
+        image_pub.publish(img_msg); **/
 
         sensor_msgs::LaserScan current_scan;
+        sensor_msgs::LaserScan noise_scan;
+
         nav_msgs::Odometry current_odom;
 
         std::vector<double> rawScan = processData.getRawScan(i);
         Odom odom_data = processData.getSensorOdom(i);
 
         convertToLaserScan(current_scan, correspondedScans[0], state, rawScan);
+        convertToNoiseScan(noise_scan, correspondedScans[0], state, rawScan);
 
         current_scan.header.stamp = ros::Time::now();
+        noise_scan.header.stamp = ros::Time::now();
         laser_scan.publish(current_scan);
+        laser_scan_dynamic.publish(noise_scan);
 
         //first, we'll publish the transform over tf
         geometry_msgs::TransformStamped odom_trans;
@@ -156,4 +165,38 @@ void convertToLaserScan(sensor_msgs::LaserScan &current_scan, std::vector<Point>
     }
 
     // std::cout << std::endl;
+}
+
+
+void convertToNoiseScan(sensor_msgs::LaserScan &noise_scan, std::vector<Point> correspondedScans, std::vector<bool> state, std::vector<double> rawScan)
+{
+    noise_scan.header.frame_id = "laser";
+    noise_scan.angle_min = -M_PI / 2.0;
+    noise_scan.angle_max = M_PI / 2.0;
+    noise_scan.angle_increment = M_PI / 180.0;
+    noise_scan.range_min = 0.0;
+    noise_scan.range_max = 80.0;
+
+    uint32_t ranges_size = std::ceil((noise_scan.angle_max - noise_scan.angle_min) / noise_scan.angle_increment);
+    noise_scan.ranges.assign(ranges_size, std::numeric_limits<double>::infinity());
+
+
+    std::vector<bool> noiseState(rawScan.size(), true);
+
+
+    for(size_t i = 0; i < correspondedScans.size(); i++)
+    {
+        if (!state[i])
+        {
+            noiseState[correspondedScans[i].id] = false;
+        }
+    }
+
+    for(size_t i = 0; i < noiseState.size(); i++)
+    {
+        if (noiseState[i])
+        {
+            noise_scan.ranges[i] = rawScan[i] / 100.0;
+        }
+    }
 }

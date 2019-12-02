@@ -46,6 +46,8 @@
     <remap from="scan" to="$(arg scan_topic)"/>
   </node>
   <node pkg="tf" type="static_transform_publisher" name="sensor_to_base_link" args="0.31 0 0 0 0 0 1 base_link laser 1" />
-  <param name="dataset" value="/data/robotdata5.log" />
+
+  <param name="dataset" value="/data/run_1.log" />
+  <param name="windowSize" value="20" />
   <node name="D_SLAM" pkg="D_SLAM" type="D_SLAM_solver" output="screen"/>
 </launch>

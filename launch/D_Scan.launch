@@ -1,0 +1,11 @@
+<launch>
+
+    <arg name="scan_topic" default="scan" />
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find D_SLAM)/rviz/robot_scan.rviz" output="screen"/>
+
+    <node pkg="tf" type="static_transform_publisher" name="sensor_to_base_link" args="0.31 0 0 0 0 0 1 base_link laser 1" />
+
+    <param name="dataset" value="/data/run_2.log" />
+    <param name="windowSize" value="20" />
+    <node name="D_SLAM" pkg="D_SLAM" type="D_SLAM_solver" output="screen"/>
+</launch>
