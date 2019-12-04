@@ -27,6 +27,34 @@ trajectory and map. We plan to implement either Lidar Odometry and Mapping(LOAM)
 or Extended Kalman Filter (EKF) or Factor Graph methods described in the class to
 work along with the classifier.
 
+## Prerequisite
+
+- [ROS Melodic](http://wiki.ros.org/melodic)
+
+- [OpenCV](https://opencv.org/)
+
+- [GMapping](http://wiki.ros.org/gmapping)
+
+## Running
+
+- Compile the package inside ROS [catkin workspace](http://wiki.ros.org/catkin/Tutorials/create_a_workspace)
+  
+  ```bash
+  roslaunch D_SLAM D_SLAM.launch
+  ```
+
+- To covert the data from ROS to .txt file
+  
+  ```bash
+  roslaunch D_SLAM logger.launch
+  ```
+
+- To plot just the classification in the RVIZ
+  
+  ```bash
+  roslaunch D_SLAM D_Scan.launch
+  ```
+
 ## References:
 
 [1] ​HUA Cheng-hao, DOU Li-hua, FANG Hao, FU Hao, A novel algorithm for SLAM in
