@@ -1,31 +1,13 @@
 # SLAM in Dynamic Environment using Landscape theory of Aggregation
 
-## Introduction
+## Abstract
 
-Majority of the traditional SLAM problems have been addressed for static
-environments. Addressing SLAM problem in dynamic environments is quite limited. With
-the advent of self-driving cars and factory automation robots, impact of robot localization
-in dynamic environment has become more profound. With this project, we expect to
-implement the existing Dynamic SLAM approach described in [1] and improve upon this
-approach. (eg additional cost functions for getting better compatibility score)
+Simultaneous Localization and Mapping (SLAM) is an essential part of any mobile robot. While the current state-of-the-art approach solves the problem in a static environment reasonably well, the performance in a dynamic environment is hit or miss. The traditional SLAM method assumes that the number of measurements from static objects would be large enough to dominate measurements from dynamic objects. We advocate for the explicit filtering of measurements from dynamic objects for better localization and mapping performance. We use the landscape theory of aggregation method to form an optimization problem. We observe the measurements for a time-window and compute weights for the optimization. We perform gradient descent to minimize the energy to classify and filter out measurements from dynamic objects. Finally, using ROS's GMapping Package we show improved SLAM output.
 
-Proposed approach utilizes theory originally proposed in political science journal
-titled Landscape Theory of Aggregation[2] of all places. While traditional SLAM
-algorithm assumes that all the features are static and hopes that high number of static
-features will counter the misleading measurements provided by dynamic features,
-Landscape Theory of Aggregation will allow us to classify the features into static and
-dynamic set and will enable explicit use of just stationary features in our SLAM pipeline
-resulting in the improved map and localization output. Also, the structure of the
-proposed approach allows for integration with any existing SLAM system to get
-improved results in dynamic environments.
+- [Final Report](https://github.com/ahemaesh/Dynamic_SLAM_using_Landscape_Theory_of_Aggregation/raw/master/report/Team_SLAM_Dunk_Final_Report.pdf)
 
-Novelty of the paper is in classifying features in static and dynamic class. The
-classification is performed by finding a least squares optimization solution to set of
-correspondences that are to be classified as static or dynamic. Also, proposed
-approach requires traditional SLAM once classification is performed to get robot
-trajectory and map. We plan to implement either Lidar Odometry and Mapping(LOAM)
-or Extended Kalman Filter (EKF) or Factor Graph methods described in the class to
-work along with the classifier.
+- [Repo link](https://github.com/ahemaesh/Dynamic_SLAM_using_Landscape_Theory_of_Aggregation)
+
 
 ## Prerequisite
 
@@ -54,6 +36,15 @@ work along with the classifier.
   ```bash
   roslaunch D_SLAM D_Scan.launch
   ```
+
+## Results
+
+[![Watch the video](https://img.youtube.com/vi/aJXhTr-SyeE/maxresdefault.jpg)](https://youtu.be/aJXhTr-SyeE)
+
+[![Watch the video](https://img.youtube.com/vi/Am5gR6rEqZA/maxresdefault.jpg)](https://youtu.be/Am5gR6rEqZA)
+
+[![Watch the video](https://img.youtube.com/vi/_B_P1TQPGAs/maxresdefault.jpg)](https://youtu.be/_B_P1TQPGAs)
+
 
 ## References:
 
